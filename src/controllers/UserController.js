@@ -2,13 +2,36 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const { google } = require('googleapis');
+const OAuth2 = google.auth.OAuth2;
+
+const oauth2Client = new OAuth2(
+	'138133307207-5qu992jt4ekebl98the2dagibgeavusj.apps.googleusercontent.com',
+	'rcuCqPbahvuSdXw6tnoBZFGi',
+	'https://developers.google.com/oauthplayground',
+);
+
+oauth2Client.setCredentials({
+	refresh_token:
+		'1//04LjGSDwTSBGzCgYIARAAGAQSNwF-L9Ira-wvCDfZTbvJfNKlMQSggap0x7CX_kik7DAX_CIIMXh-9Bu87ngTULAXlcYpuLp8ZFE',
+});
+const accessToken = oauth2Client.getAccessToken();
 
 const transport = nodemailer.createTransport({
-  service: "Gmail",
-  auth: {
-    user: "naorespondapandateam@gmail.com",
-    pass: "Amasi@198"
-  }
+	service: 'Gmail',
+	auth: {
+		type: 'OAuth2',
+		user: 'naorespondapandateam@gmail.com',
+		clientId:
+			'138133307207-5qu992jt4ekebl98the2dagibgeavusj.apps.googleusercontent.com',
+		clientSecret: 'rcuCqPbahvuSdXw6tnoBZFGi',
+		refreshToken:
+			'1//04LjGSDwTSBGzCgYIARAAGAQSNwF-L9Ira-wvCDfZTbvJfNKlMQSggap0x7CX_kik7DAX_CIIMXh-9Bu87ngTULAXlcYpuLp8ZFE',
+		accessToken: accessToken,
+		tls: {
+			rejectUnauthorized: false,
+		},
+	},
 });
 
 module.exports = {
@@ -102,9 +125,35 @@ Panda Team`,
     });
   },
 
+  async editAdmin(request, response) {
+    const { id } = request.params
+    const { name, email, admin } = request.body;
+
+    const checkUser = await User.findOne({ where: { id: id } });
+
+    if (!checkUser) {
+      return response.status(400).json({
+        status: 400,
+        error: 'ID not found.'
+      })
+    } else {
+
+      const edit = await checkUser.update({
+        name,
+        email,
+        admin,
+      });
+
+      return response.status(200).json({
+        status: 200,
+        message: 'Dados atualizados'
+      })
+    }
+  },
+
   async edit(request, response) {
     const { id } = request.params
-    const { name, email, avatar, password } = request.body;
+    const { name, email, avatar, password, admin } = request.body;
 
     const checkUser = await User.findOne({ where: { id: id } });
 
@@ -128,12 +177,34 @@ Panda Team`,
         name,
         email,
         avatar,
+        admin,
         password: hashedPassword
       });
 
       return response.status(200).json({
         status: 200,
         message: 'Dados atualizados'
+      })
+    }
+  },
+
+  async delete(request, response) {
+    const {id} = request.params;
+
+    try {
+      const user = await User.findOne({ where: { id: id } });
+      if (user) {
+        await user.destroy()
+
+        return response.status(200).json({
+          status: 200,
+          message: 'Usuário deletado com sucesso!!!'
+        })
+      }
+    } catch (err) {
+      return response.status(500).json({
+        status: 500,
+        error: 'Connection error, user check DB'
       })
     }
   },

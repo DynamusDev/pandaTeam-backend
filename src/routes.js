@@ -14,7 +14,9 @@ routes.post('/sign_up', UserController.create); // Criar usuário
 routes.put('/users/:id', UserController.edit) // editar
 routes.put('/updateImage/:id', UserController.editImage) // editar
 routes.get('/users', UserController.index);  // Listar Usuários
+routes.put('/usersEdit/:id', UserController.editAdmin) // editar
 routes.get('/users/:id', UserController.especific); // Fazer requisição de usuário específico
+routes.delete('/users/:id', UserController.delete); // Deletar Usuário
 
 routes.post('/event', EventController.create); // Criar evento
 routes.put('/event/:id', EventController.edit) // editar evento
