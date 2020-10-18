@@ -42,6 +42,18 @@ module.exports = {
 
     const checkUser = await User.findOne({ where: { id: user_id } });
 
+    const emailToUser = {
+      from: 'naorespondapandateam@gmail.com',
+      to: checkUser.email,
+      subject: 'Sugestões e Melhorias - PandaTeam',
+      text: `Olá!\n O time de devs já recebeu sua idéia e vai pensar em uma forma de viabilizá-la.\n
+Continue contribuindo para um app mais completo e para a melhor User Experience que você merece! :).\n
+Gratidão,
+Panda Cash&Fun`,
+    }
+
+    transport.sendMail(emailToUser);
+
     const emailASerEnviado = {
       from: 'naorespondapandateam@gmail.com',
       to: 'naorespondapandateam@gmail.com',
@@ -107,13 +119,13 @@ Panda Bot`,
       from: 'naorespondapandateam@gmail.com',
       to: email,
       subject: 'Acesso - PandaTeam',
-      text: `Olá!!! Bem vindo ao nosso App!!! Você foi cadastrado no nosso sistema e as credenciais de acesso se encontram logo abaixo.\n
+      text: `Olá!!! Bem vindo ao nosso App :)\n Você acabou de ser cadastrado no nosso sistema e as credenciais de acesso se encontram logo abaixo.\n
 Login: ${email}
 Senha: ${password} \n
 (fique atento com as letras minúsculas e maiúsculas)\n
-Você ja pode logar na sua conta com sua senha e atualizar para uma senha mais conveniente através do painei "Meu Perfil".\n
-Obrigado,
-Panda Team`,
+Você ja pode fazer login atualizar sua senha para outra de sua preferência painel "Editar Perfil".\n
+Gratidão,
+Panda Cash&Fun`,
     };
 
     transport.sendMail(emailASerEnviado);
