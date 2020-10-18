@@ -1,11 +1,12 @@
 const bcrypt = require('bcryptjs');
 const Event = require('../models/Event');
+const Cash = require('../models/Cash');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
 module.exports = {
 
-  async create(request, response) {
+  async create(req, res) {
     const { 
       title, 
       date, 
@@ -16,7 +17,14 @@ module.exports = {
       tax_coupon_three, 
       tax_coupon_four, 
       tax_coupon_five 
-    } = request.body;
+    } = req.body;
+
+    const prevAmount = await Cash.findOne({where: {id:1}})
+    const calculate = parseFloat(prevAmount.amount.replace(',','.'), 2) - parseFloat(amount_spent.replace(',','.'), 2)
+
+    const add = prevAmount.update({
+      amount: calculate.toString().replace('.',',')
+    });
 
     const data = {
       title, 
@@ -32,7 +40,10 @@ module.exports = {
 
     const event = await Event.create(data)
 
-    return response.status(200).json({
+    req.io.emit('event', event.dataValues);
+    req.io.emit('cash', calculate.toString().replace('.',','));
+
+    return res.status(200).json({
       status: 200,
       message: 'O evento ' + title + ' foi adicionado!!!'
     });

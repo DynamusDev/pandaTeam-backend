@@ -5,13 +5,36 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const crypto = require('crypto');
 const authConfig = require('../config/auth.json')
+const { google } = require('googleapis');
+const OAuth2 = google.auth.OAuth2;
+
+const oauth2Client = new OAuth2(
+	'138133307207-5qu992jt4ekebl98the2dagibgeavusj.apps.googleusercontent.com',
+	'rcuCqPbahvuSdXw6tnoBZFGi',
+	'https://developers.google.com/oauthplayground',
+);
+
+oauth2Client.setCredentials({
+	refresh_token:
+		'1//04LjGSDwTSBGzCgYIARAAGAQSNwF-L9Ira-wvCDfZTbvJfNKlMQSggap0x7CX_kik7DAX_CIIMXh-9Bu87ngTULAXlcYpuLp8ZFE',
+});
+const accessToken = oauth2Client.getAccessToken();
 
 const transport = nodemailer.createTransport({
-  service: "Gmail",
-  auth: {
-    user: "naorespondapandateam@gmail.com",
-    pass: "Amasi@198"
-  }
+	service: 'Gmail',
+	auth: {
+		type: 'OAuth2',
+		user: 'naorespondapandateam@gmail.com',
+		clientId:
+			'138133307207-5qu992jt4ekebl98the2dagibgeavusj.apps.googleusercontent.com',
+		clientSecret: 'rcuCqPbahvuSdXw6tnoBZFGi',
+		refreshToken:
+			'1//04LjGSDwTSBGzCgYIARAAGAQSNwF-L9Ira-wvCDfZTbvJfNKlMQSggap0x7CX_kik7DAX_CIIMXh-9Bu87ngTULAXlcYpuLp8ZFE',
+		accessToken: accessToken,
+		tls: {
+			rejectUnauthorized: false,
+		},
+	},
 });
 
 module.exports = {
@@ -33,8 +56,6 @@ module.exports = {
         error: 'Senha incorreta, verifique a senha e tente novamente'
       })
     }
-
-    user.password = undefined
 
     const token = jwt.sign({ id: user.id }, authConfig.secret, {
       expiresIn: 86400,

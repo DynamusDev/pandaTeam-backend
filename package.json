@@ -46,6 +46,7 @@
         "rotating-file-stream": "^1.4.6",
         "sequelize": "^6.3.4",
         "sharp": "^0.25.2",
+        "socket.io": "^2.3.0",
         "sqlite3": "^5.0.0"
     },
     "_moduleAliases": {

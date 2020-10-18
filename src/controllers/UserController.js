@@ -3,6 +3,7 @@ const User = require('../models/User');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const { google } = require('googleapis');
+const { resolve6 } = require('dns');
 const OAuth2 = google.auth.OAuth2;
 
 const oauth2Client = new OAuth2(
@@ -35,6 +36,30 @@ const transport = nodemailer.createTransport({
 });
 
 module.exports = {
+
+  async send(request, response) {
+    const {suggestion, user_id} =request.body
+
+    const checkUser = await User.findOne({ where: { id: user_id } });
+
+    const emailASerEnviado = {
+      from: 'naorespondapandateam@gmail.com',
+      to: 'naorespondapandateam@gmail.com',
+      subject: 'Sugestões e Melhorias - PandaTeam',
+      text: `Olá!!! Recebemos uma sugestão de melhoria do(a) usuário(a) ${checkUser.name} e a mesma encontra-se logo abaixo.\n
+"${suggestion}"\n
+Contamos com você para fazer dessa uma experiência Incrível!!!.\n
+Obrigado,
+Panda Bot`,
+    };
+
+    transport.sendMail(emailASerEnviado);
+
+    return response.status(200).json({
+      status: 200,
+      message: 'Sugestão Enviada!!!'
+    });
+  },
 
   async create(request, response) {
     const { name, email, admin } = request.body;
@@ -151,9 +176,9 @@ Panda Team`,
     }
   },
 
-  async edit(request, response) {
-    const { id } = request.params
-    const { name, email, avatar, password, admin } = request.body;
+  async edit(req, res) {
+    const { id } = req.params
+    const { name, email, avatar, password} = req.body;
 
     const checkUser = await User.findOne({ where: { id: id } });
 
@@ -164,27 +189,45 @@ Panda Team`,
       })
     } else {
 
-      let hashedPassword;
-      try {
-        hashedPassword = await bcrypt.hash(password, 12);
-      } catch (err) {
-        console.error(err);
-        const error = 'Could not create user, try again later.(hash error)';
-        return next(error);
+      if (!await bcrypt.compare(password, checkUser.password)) {
+        let hashedPassword;
+        try {
+          hashedPassword = await bcrypt.hash(password, 12);
+        } catch (err) {
+          console.error(err);
+          const error = 'Could not create user, try again later.(hash error)';
+          return next(error);
+        }
+
+        const edit = await checkUser.update({
+          name,
+          email,
+          avatar,
+          password: hashedPassword
+        });
+
+        req.io.emit('user', edit.dataValues);
+
+        return res.status(200).json({
+          status: 200,
+          message: 'Dados atualizados',
+          user: edit.dataValues
+        })
+      }else{
+        const edit = await checkUser.update({
+          name,
+          email,
+          avatar
+        });
+
+        req.io.emit('user', edit.dataValues);
+
+        return res.status(200).json({
+          status: 200,
+          message: 'Dados atualizados',
+          user: edit.dataValues
+        })
       }
-
-      const edit = await checkUser.update({
-        name,
-        email,
-        avatar,
-        admin,
-        password: hashedPassword
-      });
-
-      return response.status(200).json({
-        status: 200,
-        message: 'Dados atualizados'
-      })
     }
   },
 
@@ -202,6 +245,7 @@ Panda Team`,
         })
       }
     } catch (err) {
+      console.log(err)
       return response.status(500).json({
         status: 500,
         error: 'Connection error, user check DB'
