@@ -188,7 +188,35 @@ Panda Cash&Fun`,
     }
   },
 
-  async edit(req, res) {
+  async editWithoutPassword(req, res){
+    const { id } = req.params
+    const { name, email, avatar} = req.body;
+
+    const checkUser = await User.findOne({ where: { id: id } });
+
+    if (!checkUser) {
+      return response.status(400).json({
+        status: 400,
+        error: 'ID not found.'
+      })
+    } else {
+      const edit = await checkUser.update({
+        name,
+        email,
+        avatar
+      });
+
+      req.io.emit(id, edit.dataValues);
+
+      return res.status(200).json({
+        status: 200,
+        message: 'Dados atualizados',
+        user: edit.dataValues
+      })
+    }
+  },
+
+  async editWithPassword(req, res) {
     const { id } = req.params
     const { name, email, avatar, password} = req.body;
 
@@ -200,8 +228,6 @@ Panda Cash&Fun`,
         error: 'ID not found.'
       })
     } else {
-
-      if (!await bcrypt.compare(password, checkUser.password)) {
         let hashedPassword;
         try {
           hashedPassword = await bcrypt.hash(password, 12);
@@ -218,28 +244,13 @@ Panda Cash&Fun`,
           password: hashedPassword
         });
 
-        req.io.emit('user', edit.dataValues);
+        req.io.emit(id, edit.dataValues);
 
         return res.status(200).json({
           status: 200,
           message: 'Dados atualizados',
           user: edit.dataValues
         })
-      }else{
-        const edit = await checkUser.update({
-          name,
-          email,
-          avatar
-        });
-
-        req.io.emit('user', edit.dataValues);
-
-        return res.status(200).json({
-          status: 200,
-          message: 'Dados atualizados',
-          user: edit.dataValues
-        })
-      }
     }
   },
 

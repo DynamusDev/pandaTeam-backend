@@ -13,7 +13,8 @@ routes.post('/forgot_password', SessionController.forgotPassword) // Esqueci min
 
 routes.post('/sign_up', UserController.create); // Criar usuário
 routes.post('/contact_us', UserController.send); // Contact Us
-routes.put('/users/:id', UserController.edit) // editar
+routes.put('/users/:id', UserController.editWithPassword) // editar
+routes.put('/edit/:id', UserController.editWithoutPassword) // editar
 routes.put('/updateImage/:id', UserController.editImage) // editar
 routes.get('/users', UserController.index);  // Listar Usuários
 routes.put('/usersEdit/:id', UserController.editAdmin) // editar
