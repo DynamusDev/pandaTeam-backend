@@ -4,7 +4,7 @@ const Entry = require('../models/Entry');
 module.exports = {
   async post(req, res) {
     const {amount, userId} = req.body;
-    const date = (new Date().getDate() < 10 ? '0' : '') + new Date().getDate().toString() + '/' + (new Date().getMonth() + 1).toString() + '/' + new Date().getFullYear().toString();
+    const date = (new Date().getDate() < 10 ? '0' : '') + new Date().getDate().toString() + '/' + (new Date().getMonth() + 1 < 10 ? '0' : '') + (new Date().getMonth() + 1).toString() + '/' + new Date().getFullYear().toString();
     
     const prevAmount = await Cash.findOne({where: {id:1}})
     const calculate = parseFloat(prevAmount.amount.replace(',','.'), 2) + parseFloat(amount.replace(',','.'), 2)
