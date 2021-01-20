@@ -4,6 +4,7 @@ const UserController = require('./controllers/UserController');
 const SessionController = require('./controllers/SessionController');
 const EventController = require('./controllers/EventController');
 const CashController = require('./controllers/CashController');
+const BirthdayController = require('./controllers/BirthdayController');
 
 const routes = express.Router();
 
@@ -29,5 +30,10 @@ routes.get('/event/:id', EventController.especific); // Fazer requisição de ev
 routes.get('/cash', CashController.index); // Buscar Valores em caixa
 routes.post('/cash', CashController.post); // Adicionar valores no caixa
 routes.get('/entry', CashController.getEntries); // Buscar lançamentos no caixa
+
+routes.post('/create_birthday', BirthdayController.create); // Criar aniversário
+routes.get('/birthdays', BirthdayController.index );  // Listar aniversários
+routes.put('/birthday_edit/:id', BirthdayController.edit) // editar
+routes.delete('/birthdays/:id', BirthdayController.delete); // Deletar aniversário
 
 module.exports = routes;
