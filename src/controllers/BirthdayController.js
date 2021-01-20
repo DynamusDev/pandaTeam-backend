@@ -29,12 +29,12 @@ module.exports = {
   },
 
   async index(request, response) {
-    const birthdates = await Birthdays.findAll();
+    const birthdays = await Birthdays.findAll();
 
     return response.status(200).json({
       status: 200,
       message: 'successfuly',
-      birthdates
+      birthdays
     });
   },
 
