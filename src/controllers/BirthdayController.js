@@ -78,9 +78,11 @@ module.exports = {
     const users = await User.findAll();
     const emails = users.map(item => item.email)
     const tokens = users.map(item => item.notification_token)
+    const tokensReal = tokens.filter(item => item !== null)
+    console.log(tokensReal)
 
   let messages = [{
-    to: tokens,
+    to: tokensReal,
     sound: 'default',
     title: 'Panda Cash&Fun informa',
     body: 'Não esqueça de fazer a sua contribuição para a nossa caixinha $$$ \n Acesse o nosso app para mais informações!!!',

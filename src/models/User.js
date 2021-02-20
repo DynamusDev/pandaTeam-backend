@@ -19,6 +19,10 @@ class User extends Model {
         type: DataTypes.TEXT('long'),
         allowNull: true,
       },
+      notification_token: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       admin: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
