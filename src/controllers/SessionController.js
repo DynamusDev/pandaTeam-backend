@@ -39,7 +39,7 @@ const transport = nodemailer.createTransport({
 
 module.exports = {
   async create(request, response, next) {
-    const { email, password } = request.body;
+    const { email, password, notification_token } = request.body;
 
     const user = await User.findOne({ where: { email: email } });
 
@@ -56,6 +56,10 @@ module.exports = {
         error: 'Senha incorreta, verifique a senha e tente novamente'
       })
     }
+
+    await user.update({
+      notification_token
+    });
 
     const token = jwt.sign({ id: user.id }, authConfig.secret, {
       expiresIn: 86400,

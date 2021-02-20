@@ -8,8 +8,7 @@ const BirthdayController = require('./controllers/BirthdayController');
 
 const routes = express.Router();
 
-
-routes.post('/login', SessionController.create); //Criar Sessão(LOGIN)
+routes.patch('/login', SessionController.create); //Criar Sessão(LOGIN)
 routes.post('/forgot_password', SessionController.forgotPassword) // Esqueci minha Senha
 
 routes.post('/sign_up', UserController.create); // Criar usuário
@@ -33,6 +32,7 @@ routes.get('/entry', CashController.getEntries); // Buscar lançamentos no caixa
 
 routes.post('/create_birthday', BirthdayController.create); // Criar aniversário
 routes.get('/birthdays', BirthdayController.index );  // Listar aniversários
+routes.get('/remember', BirthdayController.remember );  // Remember
 routes.put('/birthday_edit/:id', BirthdayController.edit) // editar
 routes.delete('/birthdays/:id', BirthdayController.delete); // Deletar aniversário
 

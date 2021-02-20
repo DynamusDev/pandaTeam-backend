@@ -27,8 +27,6 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(routes);
 
-
-
 const port = process.env.PORT || 3333;
 
 server.listen(port, () => console.log("server running on port: " + port)); //Porta que a API fica escutando
